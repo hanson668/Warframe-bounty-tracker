@@ -143,7 +143,7 @@
     <div class="container">
         <div class="header">
             <h1>Warframe 賞金任務追蹤器</h1>
-            <div class="timer">剩餘時間: <span id="rotation-timer">03:42:17</span></div>
+            <div class="timer">剩餘時間: <span id="rotation-timer">計算中...</span></div>
         </div>
         
         <div class="faction-tabs">
@@ -307,29 +307,56 @@
             });
         });
         
-        // 倒計時功能
-        function updateTimer() {
+        // 計算賞金輪換時間（基於UTC時間，每2.5小時輪換一次）
+        function updateBountyTimer() {
             const timerElement = document.getElementById('rotation-timer');
-            let time = 3 * 3600 + 42 * 60 + 17; // 3小時42分17秒
+            const rotationDuration = 2.5 * 60 * 60 * 1000; // 2.5小時（毫秒）
             
-            const timerInterval = setInterval(() => {
-                time--;
-                if (time <= 0) {
-                    clearInterval(timerInterval);
+            // 獲取當前UTC時間
+            const now = new Date();
+            const utcNow = Date.UTC(
+                now.getUTCFullYear(),
+                now.getUTCMonth(),
+                now.getUTCDate(),
+                now.getUTCHours(),
+                now.getUTCMinutes(),
+                now.getUTCSeconds()
+            );
+            
+            // 計算當前輪換週期的開始時間
+            const rotationStart = new Date(Math.floor(utcNow / rotationDuration) * rotationDuration);
+            
+            // 計算下一個輪換時間
+            const nextRotation = new Date(rotationStart.getTime() + rotationDuration);
+            
+            // 計算剩餘時間（毫秒）
+            let remainingTime = nextRotation - now;
+            
+            // 更新計時器
+            const updateTimer = () => {
+                remainingTime -= 1000;
+                
+                if (remainingTime <= 0) {
                     timerElement.textContent = "已輪換";
+                    // 重新計算下一輪
+                    setTimeout(updateBountyTimer, 1000);
                     return;
                 }
                 
-                const hours = Math.floor(time / 3600);
-                const minutes = Math.floor((time % 3600) / 60);
-                const seconds = time % 60;
+                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
                 
                 timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
+                
+                setTimeout(updateTimer, 1000);
+            };
+            
+            updateTimer();
         }
         
         // 初始化倒計時
-        updateTimer();
+        updateBountyTimer();
     </script>
 </body>
 </html>
