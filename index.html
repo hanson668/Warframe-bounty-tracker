@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warframe 賞金任務追蹤器</title>
+    <style>
+        :root {
+            --holdfasts-color: #4a148c;
+            --cavia-color: #006064;
+            --hex-color: #5d4037;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 10px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        h1 {
+            color: #ff9800;
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .timer {
+            background-color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .faction-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .faction-tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        
+        .faction-tab.active {
+            background-color: #333;
+        }
+        
+        .faction-content {
+            display: none;
+        }
+        
+        .faction-content.active {
+            display: block;
+        }
+        
+        .bounty-tier {
+            background-color: #1e1e1e;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .tier-header {
+            padding: 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background-color: #252525;
+        }
+        
+        .tier-content {
+            padding: 0 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .tier-expanded .tier-content {
+            max-height: 1000px;
+            padding-bottom: 10px;
+        }
+        
+        .bounty-stage {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #252525;
+            border-radius: 4px;
+        }
+        
+        .stage-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #4fc3f7;
+        }
+        
+        .stage-objective {
+            margin-bottom: 5px;
+        }
+        
+        .standing-reward {
+            margin-top: 10px;
+            padding: 5px;
+            background-color: #2a2a2a;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .timer {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Warframe 賞金任務追蹤器</h1>
+            <div class="timer">剩餘時間: <span id="rotation-timer">03:42:17</span></div>
+        </div>
+        
+        <div class="faction-tabs">
+            <div class="faction-tab" data-faction="holdfasts">堅守者</div>
+            <div class="faction-tab active" data-faction="cavia">參研者</div>
+            <div class="faction-tab" data-faction="hex">六煞幫</div>
+        </div>
+        
+        <!-- 堅守者 -->
+        <div id="holdfasts-content" class="faction-content">
+            <div class="bounty-tier tier-expanded">
+                <div class="tier-header">
+                    <span>堅守者賞金任務</span>
+                    <span>等級: 50-115</span>
+                </div>
+                <div class="tier-content">
+                    <div class="bounty-stage">
+                        <div class="stage-title">綠色大楚 (移動防禦)</div>
+                        <div class="stage-objective">用指揮官擊殺 10 名敵人</div>
+                        <div class="standing-reward">聲望: 50-55 | 進度: 1/2 VQ</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">永景孤城 (虛空洪潮)</div>
+                        <div class="stage-objective">封閉 3 處破裂並讓儀表維持在 70% 以下</div>
+                        <div class="standing-reward">聲望: 60-65 | 進度: 2/3 VQ</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">Tuval 公域 (虛空連前)</div>
+                        <div class="stage-objective">使用 8 個異形裝置</div>
+                        <div class="standing-reward">聲望: 70-75 | 進度: 3/5 VQ</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">哈拉科周界 (殲滅)</div>
+                        <div class="stage-objective">尋找並啟動 2 個虛空湧流</div>
+                        <div class="standing-reward">聲望: 90-95 | 進度: 4/6 VQ</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">Oro 工場 (虛空決戰)</div>
+                        <div class="stage-objective">找到一個獨立獎章並將它帶給 Melica</div>
+                        <div class="standing-reward">聲望: 110-115 | 進度: 5/8 VQ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 參研者 -->
+        <div id="cavia-content" class="faction-content active">
+            <div class="bounty-tier tier-expanded">
+                <div class="tier-header">
+                    <span>參研者賞金任務</span>
+                    <span>等級: 55-120</span>
+                </div>
+                <div class="tier-content">
+                    <div class="bounty-stage">
+                        <div class="stage-title">裘渤褔 (刺殺)</div>
+                        <div class="stage-objective">擊敗濺利低語或苛刻低語</div>
+                        <div class="standing-reward">聲望: 1000/1500</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">穆尼歐 (鏡像防禦)</div>
+                        <div class="stage-objective">擊殺 3 名飛行的喃喃者敵人</div>
+                        <div class="standing-reward">聲望: 2000/3000</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">坎比爾 (轉化)</div>
+                        <div class="stage-objective">消滅 150 名喃喃者敵人</div>
+                        <div class="standing-reward">聲望: 3000/4500</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">阿馬圖斯 (中斷)</div>
+                        <div class="stage-objective">若點於 20 秒後消失</div>
+                        <div class="standing-reward">聲望: 4000/6000</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">涅克斯 (殲滅)</div>
+                        <div class="stage-objective">摧毀 60 個裝飾物</div>
+                        <div class="standing-reward">聲望: 5000/7500</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 六煞幫 -->
+        <div id="hex-content" class="faction-content">
+            <div class="bounty-tier tier-expanded">
+                <div class="tier-header">
+                    <span>六煞幫賞金任務</span>
+                    <span>等級: 65-130</span>
+                </div>
+                <div class="tier-content">
+                    <div class="bounty-stage">
+                        <div class="stage-title">至點廣場 (防禦)</div>
+                        <div class="stage-objective">破壞 3 個清剿隊單位的後背包</div>
+                        <div class="standing-reward">聲望: 1000/1500 | 發佈者: Amir</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">地獄洗滌：清剿隊 (生存)</div>
+                        <div class="stage-objective">以處決攻擊擊殺 2 名敵人</div>
+                        <div class="standing-reward">聲望: 2000/3000 | 發佈者: Eleanor</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">殲滅：科腐者</div>
+                        <div class="stage-objective">科腐敵人死亡時會爆炸</div>
+                        <div class="standing-reward">聲望: 3000/4500 | 發佈者: Lettie</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">傳承細胞收割</div>
+                        <div class="stage-objective">在敵人上方擊殺 35 名敵人</div>
+                        <div class="standing-reward">聲望: 4000/6000 | 發佈者: Arthur</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">刺殺：H-09 戰車</div>
+                        <div class="stage-objective">破壞 16 台車輛</div>
+                        <div class="standing-reward">聲望: 5000/7500 | 發佈者: Quincy</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">地獄洗滌：科腐者 (生存)</div>
+                        <div class="stage-objective">破壞 20 個科腐侷限身上的喇叭</div>
+                        <div class="standing-reward">聲望: 6000/9000 | 發佈者: Aoi</div>
+                    </div>
+                    
+                    <div class="bounty-stage">
+                        <div class="stage-title">地獄洗滌：科腐者 (生存)</div>
+                        <div class="stage-objective">科腐敵人死亡時會爆炸</div>
+                        <div class="standing-reward">聲望: 7500/11250</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切換陣營標籤
+        document.querySelectorAll('.faction-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.faction-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.faction-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.faction}-content`).classList.add('active');
+            });
+        });
+        
+        // 折疊/展開賞金階層
+        document.querySelectorAll('.tier-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.parentElement.classList.toggle('tier-expanded');
+            });
+        });
+        
+        // 倒計時功能
+        function updateTimer() {
+            const timerElement = document.getElementById('rotation-timer');
+            let time = 3 * 3600 + 42 * 60 + 17; // 3小時42分17秒
+            
+            const timerInterval = setInterval(() => {
+                time--;
+                if (time <= 0) {
+                    clearInterval(timerInterval);
+                    timerElement.textContent = "已輪換";
+                    return;
+                }
+                
+                const hours = Math.floor(time / 3600);
+                const minutes = Math.floor((time % 3600) / 60);
+                const seconds = time % 60;
+                
+                timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        // 初始化倒計時
+        updateTimer();
+    </script>
+</body>
+</html>
