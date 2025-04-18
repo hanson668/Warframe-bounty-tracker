@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warframe 賞金任務追蹤器</title>
+    <title>Warframe 三陣營賞金完整追蹤器</title>
     <style>
         :root {
             --holdfasts-color: #4a148c;
@@ -127,24 +127,61 @@
             font-size: 14px;
         }
         
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .timer {
-                margin-top: 10px;
-            }
+        .bonus-objective {
+            margin-top: 5px;
+            padding: 3px;
+            background-color: #1b5e20;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        
+        .refresh-btn {
+            background-color: #ff9800;
+            color: #121212;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .loading {
+            color: #aaa;
+            font-style: italic;
+            padding: 10px;
+        }
+        
+        .last-updated {
+            font-size: 12px;
+            color: #777;
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .stage-number {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #4a148c;
+            border-radius: 50%;
+            text-align: center;
+            margin-right: 5px;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Warframe 賞金任務追蹤器</h1>
-            <div class="timer">剩餘時間: <span id="rotation-timer">計算中...</span></div>
+            <h1>Warframe 三陣營賞金完整追蹤器</h1>
+            <div>
+                <span class="timer">剩餘時間: <span id="rotation-timer">計算中...</span></span>
+                <button class="refresh-btn" id="refresh-btn">更新數據</button>
+            </div>
         </div>
+        
+        <div class="last-updated" id="last-updated"></div>
         
         <div class="faction-tabs">
             <div class="faction-tab" data-faction="holdfasts">堅守者</div>
@@ -159,36 +196,8 @@
                     <span>堅守者賞金任務</span>
                     <span>等級: 50-115</span>
                 </div>
-                <div class="tier-content">
-                    <div class="bounty-stage">
-                        <div class="stage-title">綠色大楚 (移動防禦)</div>
-                        <div class="stage-objective">用指揮官擊殺 10 名敵人</div>
-                        <div class="standing-reward">聲望: 50-55 | 進度: 1/2 VQ</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">永景孤城 (虛空洪潮)</div>
-                        <div class="stage-objective">封閉 3 處破裂並讓儀表維持在 70% 以下</div>
-                        <div class="standing-reward">聲望: 60-65 | 進度: 2/3 VQ</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">Tuval 公域 (虛空連前)</div>
-                        <div class="stage-objective">使用 8 個異形裝置</div>
-                        <div class="standing-reward">聲望: 70-75 | 進度: 3/5 VQ</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">哈拉科周界 (殲滅)</div>
-                        <div class="stage-objective">尋找並啟動 2 個虛空湧流</div>
-                        <div class="standing-reward">聲望: 90-95 | 進度: 4/6 VQ</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">Oro 工場 (虛空決戰)</div>
-                        <div class="stage-objective">找到一個獨立獎章並將它帶給 Melica</div>
-                        <div class="standing-reward">聲望: 110-115 | 進度: 5/8 VQ</div>
-                    </div>
+                <div class="tier-content" id="holdfasts-bounties">
+                    <div class="loading">載入中...</div>
                 </div>
             </div>
         </div>
@@ -200,36 +209,8 @@
                     <span>參研者賞金任務</span>
                     <span>等級: 55-120</span>
                 </div>
-                <div class="tier-content">
-                    <div class="bounty-stage">
-                        <div class="stage-title">裘渤褔 (刺殺)</div>
-                        <div class="stage-objective">擊敗濺利低語或苛刻低語</div>
-                        <div class="standing-reward">聲望: 1000/1500</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">穆尼歐 (鏡像防禦)</div>
-                        <div class="stage-objective">擊殺 3 名飛行的喃喃者敵人</div>
-                        <div class="standing-reward">聲望: 2000/3000</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">坎比爾 (轉化)</div>
-                        <div class="stage-objective">消滅 150 名喃喃者敵人</div>
-                        <div class="standing-reward">聲望: 3000/4500</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">阿馬圖斯 (中斷)</div>
-                        <div class="stage-objective">若點於 20 秒後消失</div>
-                        <div class="standing-reward">聲望: 4000/6000</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">涅克斯 (殲滅)</div>
-                        <div class="stage-objective">摧毀 60 個裝飾物</div>
-                        <div class="standing-reward">聲望: 5000/7500</div>
-                    </div>
+                <div class="tier-content" id="cavia-bounties">
+                    <div class="loading">載入中...</div>
                 </div>
             </div>
         </div>
@@ -241,122 +222,206 @@
                     <span>六煞幫賞金任務</span>
                     <span>等級: 65-130</span>
                 </div>
-                <div class="tier-content">
-                    <div class="bounty-stage">
-                        <div class="stage-title">至點廣場 (防禦)</div>
-                        <div class="stage-objective">破壞 3 個清剿隊單位的後背包</div>
-                        <div class="standing-reward">聲望: 1000/1500 | 發佈者: Amir</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">地獄洗滌：清剿隊 (生存)</div>
-                        <div class="stage-objective">以處決攻擊擊殺 2 名敵人</div>
-                        <div class="standing-reward">聲望: 2000/3000 | 發佈者: Eleanor</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">殲滅：科腐者</div>
-                        <div class="stage-objective">科腐敵人死亡時會爆炸</div>
-                        <div class="standing-reward">聲望: 3000/4500 | 發佈者: Lettie</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">傳承細胞收割</div>
-                        <div class="stage-objective">在敵人上方擊殺 35 名敵人</div>
-                        <div class="standing-reward">聲望: 4000/6000 | 發佈者: Arthur</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">刺殺：H-09 戰車</div>
-                        <div class="stage-objective">破壞 16 台車輛</div>
-                        <div class="standing-reward">聲望: 5000/7500 | 發佈者: Quincy</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">地獄洗滌：科腐者 (生存)</div>
-                        <div class="stage-objective">破壞 20 個科腐侷限身上的喇叭</div>
-                        <div class="standing-reward">聲望: 6000/9000 | 發佈者: Aoi</div>
-                    </div>
-                    
-                    <div class="bounty-stage">
-                        <div class="stage-title">地獄洗滌：科腐者 (生存)</div>
-                        <div class="stage-objective">科腐敵人死亡時會爆炸</div>
-                        <div class="standing-reward">聲望: 7500/11250</div>
-                    </div>
+                <div class="tier-content" id="hex-bounties">
+                    <div class="loading">載入中...</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 切換陣營標籤
-        document.querySelectorAll('.faction-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.faction-tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.faction-content').forEach(c => c.classList.remove('active'));
-                
-                tab.classList.add('active');
-                document.getElementById(`${tab.dataset.faction}-content`).classList.add('active');
-            });
+        // === 完整賞金數據 ===
+        const BOUNTY_DATA = {
+            holdfasts: [
+                {
+                    title: "1. 綠色大楚 (移動防禦)",
+                    objective: "保護指揮官並擊退敵人",
+                    standing: "50-55",
+                    bonus: "用指揮官擊殺10名敵人 (+25聲望)"
+                },
+                {
+                    title: "2. 永景孤城 (虛空洪潮)",
+                    objective: "封閉3處破裂點",
+                    standing: "60-65",
+                    bonus: "儀表維持在70%以下 (+30聲望)"
+                },
+                {
+                    title: "3. Tuval公域 (虛空連前)",
+                    objective: "使用8個異形裝置",
+                    standing: "70-75",
+                    bonus: "不觸發警報完成任務 (+35聲望)"
+                },
+                {
+                    title: "4. 哈拉科周界 (殲滅)",
+                    objective: "消滅所有敵人",
+                    standing: "90-95",
+                    bonus: "啟動2個虛空湧流 (+45聲望)"
+                },
+                {
+                    title: "5. Oro工場 (虛空決戰)",
+                    objective: "擊敗虛空天使",
+                    standing: "110-115",
+                    bonus: "找到獨立獎章 (+55聲望)"
+                }
+            ],
+            cavia: [
+                {
+                    title: "1. 裘渤褔 (刺殺)",
+                    objective: "擊敗濺利低語或苛刻低語",
+                    standing: "1000/1500",
+                    bonus: "無傷完成任務 (+300聲望)"
+                },
+                {
+                    title: "2. 穆尼歐 (鏡像防禦)",
+                    objective: "保護目標免受攻擊",
+                    standing: "2000/3000",
+                    bonus: "擊殺3名飛行的喃喃者 (+500聲望)"
+                },
+                {
+                    title: "3. 坎比爾 (轉化)",
+                    objective: "消滅150名喃喃者",
+                    standing: "3000/4500",
+                    bonus: "使用技能擊殺50名敵人 (+800聲望)"
+                },
+                {
+                    title: "4. 阿馬圖斯 (中斷)",
+                    objective: "完成4個中斷管道",
+                    standing: "4000/6000",
+                    bonus: "在20秒內完成管道 (+1000聲望)"
+                },
+                {
+                    title: "5. 涅克斯 (殲滅)",
+                    objective: "消滅60名敵人",
+                    standing: "5000/7500",
+                    bonus: "摧毀60個裝飾物 (+1500聲望)"
+                }
+            ],
+            hex: [
+                {
+                    title: "1. 至點廣場 (防禦)",
+                    objective: "防禦目標5波攻擊",
+                    standing: "1000/1500",
+                    bonus: "破壞3個清剿隊後背包 (+300聲望)"
+                },
+                {
+                    title: "2. 地獄洗滌：清剿隊 (生存)",
+                    objective: "生存10分鐘",
+                    standing: "2000/3000",
+                    bonus: "以處決攻擊擊殺2名敵人 (+600聲望)"
+                },
+                {
+                    title: "3. 殲滅：科腐者",
+                    objective: "消滅所有科腐者",
+                    standing: "3000/4500",
+                    bonus: "爆頭擊殺15名敵人 (+900聲望)"
+                },
+                {
+                    title: "4. 傳承細胞收割",
+                    objective: "收集50個細胞",
+                    standing: "4000/6000",
+                    bonus: "在敵人上方擊殺35名敵人 (+1200聲望)"
+                },
+                {
+                    title: "5. 刺殺：H-09戰車",
+                    objective: "摧毀H-09戰車",
+                    standing: "5000/7500",
+                    bonus: "破壞16台車輛 (+1500聲望)"
+                },
+                {
+                    title: "6. 地獄洗滌：科腐者 (生存)",
+                    objective: "生存15分鐘",
+                    standing: "6000/9000",
+                    bonus: "破壞20個科腐侷限喇叭 (+1800聲望)"
+                }
+            ]
+        };
+
+        // === 主功能 ===
+        document.addEventListener('DOMContentLoaded', () => {
+            initTabs();
+            initCollapse();
+            initRefreshButton();
+            updateBountyTimer();
+            loadBountyData();
         });
-        
-        // 折疊/展開賞金階層
-        document.querySelectorAll('.tier-header').forEach(header => {
-            header.addEventListener('click', () => {
-                header.parentElement.classList.toggle('tier-expanded');
+
+        function initTabs() {
+            document.querySelectorAll('.faction-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.faction-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.faction-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.faction}-content`).classList.add('active');
+                });
             });
-        });
-        
-        // 計算賞金輪換時間（基於UTC時間，每2.5小時輪換一次）
+        }
+
+        function initCollapse() {
+            document.querySelectorAll('.tier-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    header.parentElement.classList.toggle('tier-expanded');
+                });
+            });
+        }
+
+        function initRefreshButton() {
+            document.getElementById('refresh-btn').addEventListener('click', () => {
+                loadBountyData();
+                document.getElementById('last-updated').textContent = `最後更新: ${new Date().toLocaleTimeString()}`;
+            });
+        }
+
         function updateBountyTimer() {
-            const timerElement = document.getElementById('rotation-timer');
-            const rotationDuration = 2.5 * 60 * 60 * 1000; // 2.5小時（毫秒）
-            
-            // 獲取當前UTC時間
+            const ROTATION_DURATION = 2.5 * 60 * 60 * 1000;
             const now = new Date();
-            const utcNow = Date.UTC(
-                now.getUTCFullYear(),
-                now.getUTCMonth(),
-                now.getUTCDate(),
-                now.getUTCHours(),
-                now.getUTCMinutes(),
-                now.getUTCSeconds()
-            );
+            const nextRotation = new Date(Math.ceil(now.getTime() / ROTATION_DURATION) * ROTATION_DURATION);
             
-            // 計算當前輪換週期的開始時間
-            const rotationStart = new Date(Math.floor(utcNow / rotationDuration) * rotationDuration);
-            
-            // 計算下一個輪換時間
-            const nextRotation = new Date(rotationStart.getTime() + rotationDuration);
-            
-            // 計算剩餘時間（毫秒）
-            let remainingTime = nextRotation - now;
-            
-            // 更新計時器
-            const updateTimer = () => {
-                remainingTime -= 1000;
-                
-                if (remainingTime <= 0) {
-                    timerElement.textContent = "已輪換";
-                    // 重新計算下一輪
+            const updateCountdown = () => {
+                const remaining = nextRotation - new Date();
+                if (remaining <= 0) {
+                    document.getElementById('rotation-timer').textContent = "已輪換";
+                    loadBountyData();
                     setTimeout(updateBountyTimer, 1000);
                     return;
                 }
                 
-                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
                 
-                timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('rotation-timer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 
-                setTimeout(updateTimer, 1000);
+                setTimeout(updateCountdown, 1000);
             };
             
-            updateTimer();
+            updateCountdown();
         }
-        
-        // 初始化倒計時
-        updateBountyTimer();
+
+        function loadBountyData() {
+            document.getElementById('last-updated').textContent = `最後更新: ${new Date().toLocaleTimeString()}`;
+            updateBountyUI('holdfasts', BOUNTY_DATA.holdfasts);
+            updateBountyUI('cavia', BOUNTY_DATA.cavia);
+            updateBountyUI('hex', BOUNTY_DATA.hex);
+        }
+
+        function updateBountyUI(faction, bounties) {
+            const container = document.getElementById(`${faction}-bounties`);
+            container.innerHTML = '';
+            
+            bounties.forEach(bounty => {
+                const bountyHTML = `
+                    <div class="bounty-stage">
+                        <div class="stage-title"><span class="stage-number">${bounty.title.charAt(0)}</span>${bounty.title.substring(3)}</div>
+                        <div class="stage-objective">${bounty.objective}</div>
+                        ${bounty.bonus ? `<div class="bonus-objective">★ 支線: ${bounty.bonus}</div>` : ''}
+                        <div class="standing-reward">聲望獎勵: ${bounty.standing}</div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', bountyHTML);
+            });
+        }
     </script>
 </body>
 </html>
